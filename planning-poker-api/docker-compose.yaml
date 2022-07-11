@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  planning-poker-database:
+    image: postgres:latest
+    container_name: planning-poker-database
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=PlanningPokerApiDatabase
+    ports:
+      - 5432:5432
+    networks:
+      - planning-poker-network
+    volumes:
+      - planning-poker-database-data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  planning-poker-pgadmin:
+    image: dpage/pgadmin4
+    container_name: planning-poker-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@email.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+      - PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"
+    ports:
+      - 8000:80
+    networks:
+      - planning-poker-network
+    volumes:
+      - planning-poker-pgadmin-data
+    depends_on:
+      - planning-poker-database
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+networks:
+  planning-poker-network:
+    driver: bridge
+
+volumes:
+  planning-poker-database-data:
+    driver: local
+  planning-poker-pgadmin-data:
+    driver: local
